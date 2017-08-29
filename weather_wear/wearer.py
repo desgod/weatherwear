@@ -3,8 +3,8 @@ import datetime
 
 OUTFIT_DICT = {
     90: 'It\'s hot out today! Wear as little clothes as possible',
-    80: 'It\'s pretty warm out. I would wear shorts and a tank.',
-    70: 'Not too bad. How about a t-shirt and jeans.',
+    80: 'It\'s pretty warm out. I would wear a t-shirt and wearable bottom.',
+    70: 'Not too bad. You could pull off a t-shirt and jeans, but might want a sweater to throw on.',
     60: 'Time to start layering! It\'s definitely okay to wear boots',
     50: 'Honey, please put on your sweater! -- love Mom',
     40: 'Wear a coat today, with warm layers underneath',
@@ -22,8 +22,8 @@ RAINY = 'Don\'t forget your umbrella!'
 CLOUDY = 'The sun seems to be playing a game of hide and seek today, so it might be a tad chilly.'
 SNOW = 'Snow day! Get the hot cocoa ready!'
 
-
 WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
 
 class WeatherWearer(object):
 
@@ -39,7 +39,6 @@ class WeatherWearer(object):
 
         self.get_description_for_temp()
         self.get_description_for_weather()
-
 
     def get_description_for_temp(self):
         # Need a way to account for high and low temps for the day
@@ -62,10 +61,9 @@ class WeatherWearer(object):
         date = datetime.datetime.fromtimestamp(self._epochdate)
         return WEEK_DAYS[date.weekday()]
 
-
     def __repr__(self):
         import json
-        return  json.dumps({
+        return json.dumps({
             'current_temperature': self.current_temperature,
             'min_temperature': self.min_temperature,
             'max_temperature': self.max_temperature,
