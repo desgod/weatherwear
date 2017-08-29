@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Weather Wear</title>
+  <meta name="description" content="Telling you what to wear based on weather conditions">
+  <link rel="stylesheet" href="static/main.css">
+  </head>
+  <body>
+  <div class="title">
+  <h1> Weather Wear</h1>
+  </div>
+
+  <div class="weather-box">
+  <div class="day-info">
+  <h3 style="color: #607D8B;">{{ location_name }}</h3>
+  {{ current_forecast.day }} <br> {{ current_forecast.description }}
+  </div>
+
+  <div class="weather-info">
+  <img alt="{{ current_forecast.description }}" src="static/images/{{ current_forecast.description }}.svg" />
+  <div class="current-temp" style="align-self: center; font-size: 50px; color: #607D8B;"> {{ current_forecast.current_temperature }}°</div>
+
+  <p class="description"> {% for wear in current_forecast.wear %} {{ wear }} {% endfor %}</p>
+  </div>
+
+  <div class="forecast">
+      {% for forecast in forecast_list %}
+  <div class="day"> {{ forecast.day }} <img alt="{{ forecast.description }}" src="static/images/{{ forecast.description }}.svg" /> {{ forecast.max_temperature }}°</div>
+      {% endfor %}
+  </div>
+
+  </div>
+
+  </body>
+</html>
