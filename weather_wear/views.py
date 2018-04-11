@@ -1,44 +1,64 @@
-from flask import render_template
-from weather_wear import openweather, wearer, app
+from flask import jsonify
+
+from weather_wear import wearer, app
+from weather_wear.openweather import Weather
 
 
-zip_code = 20002
-
-week_forecast = openweather._get_weather_local()
-
-forecast_info = []
-for forecast in week_forecast['list']:
-    wear_object = wearer.WeatherWearer(forecast)
-    forecast_info.append(wear_object)
-
-
-@app.route('/')
-def index():
-
-    return render_template('index.html', location_name=week_forecast['city']['name'],
-                           current_forecast=forecast_info[0],
-                           day="Today",
-                           forecast_list=forecast_info)
+@app.route('/<zipcode>/todays_forecast')
+def get_todays_forecast(zipcode):
+    """
+    Get Todays forecast
+    :param zipcode: zipcode of area you would like the forecast for
+    :return: todays forecast for zip
+    
+    GET /20002/todays_forecast
+    """
+    weather = Weather(zipcode)
+    return jsonify(weather.todays_forecast)
 
 
-@app.route('/_get_forecast/<zipcode>', methods=['POST'])
-def _get_forecast(zipcode):
-    forecast_data = openweather.get_weather_forecast(zipcode)
-    location_name = forecast_data['city']['name']
+@app.route('/<zipcode>/forecast')
+def get_forecast(zipcode):
+    """
+    Get Weekly forecast
+    :param zipcode: zipcode of area you would like the weekly forecast for
+    :return: weekly forecast
+    
+    GET /20002/forecast
+    """
+    weather = Weather(zipcode)
+    return jsonify(weather.forecast)
 
-    weather_wearers = _get_populated_list(forecast_data)
-    current_forecast = weather_wearers[0]
 
-    return "hello, success" # weather_wearers
+@app.route('/<zipcode>/wear_forecast')
+def get_wear(zipcode):
+    """
+    Get Wear Forecast
+    :param zipcode: zipcode of area you would like to know what to wear for the week
+    :return: weekly forecast with descriptions on what to wear for that day
+    
+    GET /20002/wear_forecast
+    """
+    weather_forecast = Weather(zipcode).forecast
+    for forecast in weather_forecast["forecast"]:
+        wearer.add_wear_information(forecast)
+
+    return jsonify(weather_forecast)
 
 
-def _get_populated_list(forecast_data):
-    weather_wearers = []
-    for forecast_json in forecast_data['list']:
-        populated_ww = wearer.WeatherWearer(forecast_json)
-        weather_wearers.append(populated_ww)
+@app.route('/<zipcode>/wear_today')
+def get_wear_today(zipcode):
+    """
+    Get Wear Today
+    :param zipcode: zipcode of area you would like to know what to wear today
+    :return: todays forecast with description on what you should wear today
+    
+    GET /20002/wear_today
+    """
+    weather_forecast = Weather(zipcode).todays_forecast
+    wearer.add_wear_information(weather_forecast)
 
-    return weather_wearers
+    return jsonify(weather_forecast)
 
 
 

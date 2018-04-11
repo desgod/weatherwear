@@ -1,5 +1,3 @@
-import datetime
-
 
 OUTFIT_DICT = {
     90: 'It\'s hot out today! Wear as little clothes as possible',
@@ -15,61 +13,32 @@ OUTFIT_DICT = {
                }
 
 
-SUNBLOCK = 'Don\'t forget your sunblock!'
-SUNNY = 'Perfect day for those cool sunnies you have. Or wear a hat!'
-HUMID = 'Sticky icky. Bad hair day ahead. All my curly heads one word: GEL! '
-RAINY = 'Don\'t forget your umbrella!'
-CLOUDY = 'The sun seems to be playing a game of hide and seek today, so it might be a tad chilly.'
-SNOW = 'Snow day! Get the hot cocoa ready!'
+WEAR = { 'Clear': 'Perfect day for those cool sunnies you have. Or wear a hat! Don\'t forget your sunblock!',
+         'Humid': 'Sticky icky. Bad hair day ahead. All my curly heads one word: GEL! ',
+         'Rain':  'Don\'t forget your umbrella!',
+         'Clouds':'The sun seems to be playing a game of hide and seek today, so it might be a tad chilly.',
+         'Snow': 'Snow day! Get the hot cocoa ready!',
+         'Fog': 'Drive slowly!'
+         }
 
-WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+def add_wear_information(forecast):
+    """
+    Populate forecast json with what to wear information
+    :param forecast: Forecast json  
+    """
+    forecast["wear_description_temp"] = get_description_for_temp(forecast["current_temp"])
+    forecast["wear_description_weather"] = WEAR.get(forecast["description"], "")
 
 
-class WeatherWearer(object):
-
-    def __init__(self, weather_json):
-        self.current_temperature = round(weather_json['temp']['day'])
-        self.min_temperature = round(weather_json['temp']['min'])
-        self.max_temperature = round(weather_json['temp']['max'])
-        self.humidity = round(weather_json['humidity'])
-        self.wear = []
-        self.description = weather_json['weather'][0]['main']
-        self._epochdate = weather_json['dt']
-        self.day = self.get_date_information()
-
-        self.get_description_for_temp()
-        self.get_description_for_weather()
-
-    def get_description_for_temp(self):
-        # Need a way to account for high and low temps for the day
-        rounded_temp = (self.current_temperature // 10) * 10
-        description = OUTFIT_DICT[rounded_temp]
-        self.wear.append(description)
-
-    def get_description_for_weather(self):
-        if self.description == 'Clouds':
-            self.wear.append(CLOUDY)
-        elif self.description == 'Clear':
-            self.wear.append(SUNNY)
-            self.wear.append(SUNBLOCK)
-        elif self.description == 'Rain':
-            self.wear.append(RAINY)
-        elif self.description == 'Snow':
-            self.wear.append(SNOW)
-
-    def get_date_information(self):
-        date = datetime.datetime.fromtimestamp(self._epochdate)
-        return WEEK_DAYS[date.weekday()]
-
-    def __repr__(self):
-        import json
-        return json.dumps({
-            'current_temperature': self.current_temperature,
-            'min_temperature': self.min_temperature,
-            'max_temperature': self.max_temperature,
-            'humidity': self.humidity,
-            'wear': self.wear,
-            'description': self.description
-                })
+def get_description_for_temp(temperature):
+    """
+    Get what to wear info from current temperature
+    :param temperature: current temperature
+    :return: description of what to wear
+    """
+    # Need a way to account for high and low temps for the day
+    rounded_temp = (temperature // 10) * 10
+    return OUTFIT_DICT[rounded_temp]
 
 
